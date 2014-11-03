@@ -23,7 +23,7 @@ float drag;
 float acceleration;
 float velocity;
  
-const int MAXROW = 500, MAXCOL = 8, COLt = 1, COLRo = 2, COLdrag = 3, COLa = 4, COLv = 5, COLh = 6, COLg = 7, COLm = 8;	
+const int MAXROW = 250, MAXCOL = 8, COLt = 1, COLRo = 2, COLdrag = 3, COLa = 4, COLv = 5, COLh = 6, COLg = 7, COLm = 8;	
 
 
 typedef struct	RSIMStructure {     /* Defining the data structure that is used throughout the program.*/               
