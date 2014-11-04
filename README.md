@@ -6,15 +6,14 @@ colebrook-hands-off
 #include <grx20.h>
 #include <math.h>
 
-/*#define MAXROW 500*/
 
 const int pressure_at_sea_level = 101325;
-const float gravitational_constant = 6.67384E-11;
 const int radius_of_earth = 6371000;
-const float mass_of_earth = 5.972E24;
+const float gravitational_constant = 6.67384E-11;       /*Declaration of global constants, with E being used instead of "pow", and doubles being used for*/
+const float mass_of_earth = 5.972E24;                   /*increased precision.*/
 const float gas_constant = 8.31;
 const double PI = 3.141592654;
-float time;
+float time;                                             /*Declaration of global variables, this is so that they are updated within the data structure.*/
 float density;
 float mass;
 float gravity;
@@ -33,7 +32,7 @@ typedef struct	RSIMStructure {     /* Defining the data structure that is used t
  }  RSIMType;
 
    
-char * displaytitle = "Atlas V 400 Rocket Simulation Data", * graph1yalabel = "Acceleration (m/s^2)",* graph1yblabel = "Velocity (m/s^1)", * graph1xlabel = "Time (s)", * graph2ylabel = "Altitude (m)", *graph2xlabel = "Fuel Usage (kg)";
+char * displaytitle = "Atlas V 400 Rocket Simulation Data", * graph1yalabel = "Acceleration (m/s^2)",* graph1yblabel = "Velocity (m/s^1)", * graph1xlabel = "Time (s)", * graph2ylabel = "Rocket Mass (kg)", *graph2xlabel = "Altitude (m)";
 
 
 /* Above is the declaration of the functions used within the program, along with the default axis labels within global character arrays.*/
@@ -211,14 +210,15 @@ Graph_plotter(int column_x, int column_y, RSIMType datatable,  int max, float xb
     DrawText1(xres/3, yres-2*ib, graph2xlabel, GR_ALIGN_CENTER, GR_ALIGN_TOP );
     
     GrFilledBox(((2*(xres-ob))/3)+(ob/2),(yres/2)+(ob/2)+ib,xres-(ob/2),yres-(ob/2),8);
-    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), graph1yalabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);
-    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(2*ob), graph2ylabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);
-    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(3*ob), graph2xlabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);
-    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(4*ob), graph1xlabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), graph1yalabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);            /*Acceleration label in parameter box*/
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(2*ob), graph1yblabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);          /*Velocity label in parameter box*/
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(3*ob), graph1xlabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);           /*Time label in parameter box*/
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(4*ob), graph2ylabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);           /*Rocket mass label in parameter box*/
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(5*ob), graph2xlabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);           /*Altitude label in parameter box*/
     
     plot_graph(1, 5, datatable, x1a, y1a, x2a, y2a, 15); /* function to plot velocity against time on the top graph*/
     plot_graph(1, 4, datatable, x1a, y1a, x2a, y2a, 4); /* function to plot accleration against time on the top graph*/
-    plot_graph(1, 6, datatable, x1b, y1b, x2b, y2b, 5); /* function to plot altitude against time on the top graph*/
+    plot_graph(6, 8, datatable, x1b, y1b, x2b, y2b, 5); /* function to plot altitude against time on the top graph*/
     
     exit_cross_size = 15;
     GrLine(xres - exit_cross_size,0,xres,exit_cross_size,12);      /*Exit cross*/
@@ -231,25 +231,34 @@ Graph_plotter(int column_x, int column_y, RSIMType datatable,  int max, float xb
         GrMouseGetEventT(GR_M_LEFT_DOWN,&evt,0L);
         
         if(evt.buttons == 1 && evt.dtime > 0.01){
-            strcpy(str,"GrScreenX ");
+            /*strcpy(str,"GrScreenX ");
             sprintf(temp, "%d", GrScreenX());
             strcat(str,temp);
             strcat(str," GrScreenY ");
             sprintf(temp, "%d", GrScreenY());
-            strcat(str,temp);
+            strcat(str,temp);*/
             printf("\nx=%d, y=%d", evt.x, evt.y);
-            if (evt.y < (ob/2)+ib,ob/2 && evt.y > (yres/2)+(ob/2)-2*(ib) && evt.x < xres - ob/2 && evt.x > ob/2) {
-                      sprintf (acc_display, "Acceleration (m/s^2) = %03.0f", (ob / 2)+ib,ob/2 - evt.y + 0.0);
-                      sprintf (time_display, "DONT_KNOW = %03.0f", evt.x - (ob / 2));
+            if (evt.y > y2a && evt.y < y1a && evt.x < x2a && evt.x > x1a) {
+                      printf("\nACCELERATION VELOCITY");
+                      sprintf (acc_display, "Acceleration (m/s^2) = %03.0d", evt.y);
+                      sprintf (time_display, "DONT_KNOW = %03.0d", evt.x);
+                      /*GrFilledBox(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), ((2*(xres-ob))/3)+(ob/2)+ib + 60,(yres/2)+(ob)+10, 2);*/
+                      DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), graph1yalabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);
+                      GrTextXY(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), acc_display, 15, 8);
+                      
             }
-            if (evt.y < (ob/2)+ib,ob/2 && evt.y > 15 && evt.x < (2*(xres-ob))/3 && evt.x > ob/2) {      
-                printf(acc_display);
-                GrFilledBox(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), ((2*(xres-ob))/3)+(ob/2)+ib + 60,(yres/2)+(ob)+10, 2);
-                GrTextXY(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), acc_display, 15, 8);
+            else {
+                 printf("\nACCELERATION = NA VELOCITY = NA");
+                 }
+            if (evt.y > y2b && evt.y < y1b && evt.x < x2b && evt.x > x1b) {      
+                      printf("\nALTITUDE");
             }
+            else {
+                 printf("\nALTITUDE = NA");
+                 }
             if (evt.x > (xres -exit_cross_size) && evt.y < exit_cross_size) {       /*this is to exit the while loop when the cross is clicked*/
-                i = -1;
-                GrSetMode(GR_default_text);
+               i = -1;
+               GrSetMode(GR_default_text);
             }
         }
         
