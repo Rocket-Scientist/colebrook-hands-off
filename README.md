@@ -108,10 +108,10 @@ RSIMType ClearDataTable(RSIMType datatable) {       /* This function clears the 
          datatable.currentrow = 0; }  /* Finally the current row's data is set to 0.*/
       return datatable; }
 
-int DrawText1(int x, int y, char * message, int xAlign, int yAlign) {          /*horizontal axes, labels*/                                                
+int DrawText1(int x, int y, char * message, int xAlign, int yAlign, char color) {          /*horizontal axes, labels*/                                                
     GrTextOption grt;                                                     
     grt.txo_font = &GrDefaultFont;                                        
-    grt.txo_fgcolor.v = GrWhite();
+    grt.txo_fgcolor.v = color;
     grt.txo_bgcolor.v = GrNOCOLOR;
     grt.txo_direct = GR_TEXT_RIGHT;
     grt.txo_xalign = xAlign;
@@ -119,6 +119,19 @@ int DrawText1(int x, int y, char * message, int xAlign, int yAlign) {          /
     grt.txo_chrtype = GR_BYTE_TEXT;
     GrDrawString( message,strlen( message ),x,y,&grt );
 }
+
+int DrawText2(int x, int y, char * message, int xAlign, int yAlign, char color) {             /*vertical axes, labels*/                                             
+    GrTextOption grt;                                                     
+    grt.txo_font = &GrDefaultFont;                                        
+    grt.txo_fgcolor.v = color;
+    grt.txo_bgcolor.v = GrNOCOLOR;
+    grt.txo_direct = GR_TEXT_UP;
+    grt.txo_xalign = xAlign;
+    grt.txo_yalign = yAlign;
+    grt.txo_chrtype = GR_BYTE_TEXT;
+    GrDrawString( message,strlen( message ),x,y,&grt );
+}     
+
 
 /* Function to find the maximum value for a variable*/
 float max_function(RSIMType datatable, int column){
@@ -158,19 +171,6 @@ int scale(int start, int end, RSIMType datatable, int row, int column, int max){
         GrLine(x1, y1, x2, y2, color);
      }             
 }
-
-int DrawText2(int x, int y, char * message, int xAlign, int yAlign) {             /*vertical axes, labels*/                                             
-    GrTextOption grt;                                                     
-    grt.txo_font = &GrDefaultFont;                                        
-    grt.txo_fgcolor.v = GrWhite();
-    grt.txo_bgcolor.v = GrNOCOLOR;
-    grt.txo_direct = GR_TEXT_UP;
-    grt.txo_xalign = xAlign;
-    grt.txo_yalign = yAlign;
-    grt.txo_chrtype = GR_BYTE_TEXT;
-    GrDrawString( message,strlen( message ),x,y,&grt );
-}     
-
       
 Graph_plotter(int column_x, int column_y, RSIMType datatable,  int max, float xborderless, float yborderless) {
     int xres, yres, ob, ib, i, exit_cross_size;
@@ -180,6 +180,7 @@ Graph_plotter(int column_x, int column_y, RSIMType datatable,  int max, float xb
     char acc_display[40], time_display[40];
     GrMouseEvent evt;
     GrSetMode(GR_width_height_graphics,1024,600);
+    GrClearScreen(15);    /* Makes the graphics window white*/
     ob = 40;
     ib = 10;   
     xres=GrScreenX();
@@ -197,29 +198,48 @@ Graph_plotter(int column_x, int column_y, RSIMType datatable,  int max, float xb
     x2b = (2*(xres-ob))/3;
     y2b = ((yres+20)/2 + 2*ib);
 
-    GrLine(x1a, y1a, x1a, y2a, 15);
-    GrLine(x1a, y1a, x2a, y1a, 15);
-    GrLine(x2a, y1a, x2a, y2a, 15);
-    GrLine(x1b, y1b, x1b, y2b, 15);
-    GrLine(x1b, y1b, x2b, y1b, 15);
-    DrawText1(xres/2, 0, displaytitle, GR_ALIGN_CENTER, GR_ALIGN_TOP );    /*labels*/
-    DrawText2(ib, (yres/4)+((3/2)*ib), graph1yalabel, GR_ALIGN_CENTER, GR_ALIGN_CENTER );
-    DrawText2(xres - ib, (yres/4)+((3/2)*ib), graph1yblabel, GR_ALIGN_CENTER, GR_ALIGN_CENTER );
-    DrawText1(xres/2, ((yres/2)+(ib)), graph1xlabel, GR_ALIGN_CENTER, GR_ALIGN_TOP );
-    DrawText2(ib, yres-(yres/4), graph2ylabel, GR_ALIGN_CENTER, GR_ALIGN_CENTER );
-    DrawText1(xres/3, yres-2*ib, graph2xlabel, GR_ALIGN_CENTER, GR_ALIGN_TOP );
+    GrLine(x1a, y1a, x1a, y2a, 0);
+    GrLine(x1a, y1a, x2a, y1a, 0);
+    GrLine(x2a, y1a, x2a, y2a, 0);
+    GrLine(x1b, y1b, x1b, y2b, 0);
+    GrLine(x1b, y1b, x2b, y1b, 0);
+    DrawText1(xres/2, 0, displaytitle, GR_ALIGN_CENTER, GR_ALIGN_TOP, GrBlack());    /*labels*/
+    DrawText2(ib, (yres/4)+((3/2)*ib), graph1yalabel, GR_ALIGN_CENTER, GR_ALIGN_CENTER,GrBlack());
+    DrawText2(xres - ib, (yres/4)+((3/2)*ib), graph1yblabel, GR_ALIGN_CENTER, GR_ALIGN_CENTER,GrBlack());
+    DrawText1(xres/2, ((yres/2)+(ib)), graph1xlabel, GR_ALIGN_CENTER, GR_ALIGN_TOP, GrBlack());
+    DrawText2(ib, yres-(yres/4), graph2ylabel, GR_ALIGN_CENTER, GR_ALIGN_CENTER, GrBlack());
+    DrawText1(xres/3, yres-2*ib, graph2xlabel, GR_ALIGN_CENTER, GR_ALIGN_TOP, GrBlack());
+    
+    /*tic marks*/
+    /*for(i=(x2a-x1a)/4; i<(x2a-1); i=i+(x2a-x1a)/4){
+       GrLine(x1a+i, y1a, x1a+i, y1a+10, 0);
+       }
+    
+    for(i=(y2a-y1a)/4; i<(y2a-1); i=i+(y2a-y1a)/4){
+       GrLine(x1a, y1a + i, x1a-10, y1a + i, 0);
+       GrLine(x2a, y1a + i, x2a+10, y1a + i, 0);
+       }
+    
+    for(i=(x2b-x1b)/4; i<(x2b-1); i=i+(x2b-x1b)/4){
+       GrLine(x1b+i, y1b, x1b+i, (y1b + 10), 0);
+       DrawText1(x1b+i, y1b+10, tic_label, GR_ALIGN_CENTER, GR_ALIGN_TOP);
+       }
+     
+    for(i=(y2b-y1b)/4; i<(y2b-1); i=i+(y2b-y1b)/4){
+       GrLine(x1b, y1b+i, x1b-10, y1b + i, 0);
+       }*/
     
     GrFilledBox(((2*(xres-ob))/3)+(ob/2),(yres/2)+(ob/2)+ib,xres-(ob/2),yres-(ob/2),8);
-    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), graph1yalabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);            /*Acceleration label in parameter box*/
-    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(2*ob), graph1yblabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);          /*Velocity label in parameter box*/
-    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(3*ob), graph1xlabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);           /*Time label in parameter box*/
-    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(4*ob), graph2ylabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);           /*Rocket mass label in parameter box*/
-    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(5*ob), graph2xlabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);           /*Altitude label in parameter box*/
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), graph1yalabel, GR_ALIGN_LEFT, GR_ALIGN_TOP, GrWhite());            /*Acceleration label in parameter box*/
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(2*ob), graph1yblabel, GR_ALIGN_LEFT, GR_ALIGN_TOP, GrWhite());          /*Velocity label in parameter box*/
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(3*ob), graph1xlabel, GR_ALIGN_LEFT, GR_ALIGN_TOP, GrWhite());           /*Time label in parameter box*/
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(4*ob), graph2ylabel, GR_ALIGN_LEFT, GR_ALIGN_TOP, GrWhite());           /*Rocket mass label in parameter box*/
+    DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(5*ob), graph2xlabel, GR_ALIGN_LEFT, GR_ALIGN_TOP, GrWhite());           /*Altitude label in parameter box*/
     
-    plot_graph(1, 5, datatable, x1a, y1a, x2a, y2a, 15); /* function to plot velocity against time on the top graph*/
+    plot_graph(1, 5, datatable, x1a, y1a, x2a, y2a, 1); /* function to plot velocity against time on the top graph*/
     plot_graph(1, 4, datatable, x1a, y1a, x2a, y2a, 4); /* function to plot accleration against time on the top graph*/
-    plot_graph(6, 8, datatable, x1b, y1b, x2b, y2b, 5); /* function to plot altitude against time on the top graph*/
-    
+    plot_graph(6, 8, datatable, x1b, y1b, x2b, y2b, 2); /* function to plot altitude against time on the top graph*/
+   
     exit_cross_size = 15;
     GrLine(xres - exit_cross_size,0,xres,exit_cross_size,12);      /*Exit cross*/
     GrLine(xres - exit_cross_size,exit_cross_size,xres,0,12);      /*Exit cross*/
