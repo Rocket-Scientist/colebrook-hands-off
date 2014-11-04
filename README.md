@@ -263,7 +263,7 @@ Graph_plotter(int column_x, int column_y, RSIMType datatable,  int max, float xb
                       sprintf (acc_display, "Acceleration (m/s^2) = %03.0d", evt.y);
                       sprintf (time_display, "DONT_KNOW = %03.0d", evt.x);
                       /*GrFilledBox(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), ((2*(xres-ob))/3)+(ob/2)+ib + 60,(yres/2)+(ob)+10, 2);*/
-                      DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), graph1yalabel, GR_ALIGN_LEFT, GR_ALIGN_TOP);
+                      DrawText1(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), graph1yalabel, GR_ALIGN_LEFT, GR_ALIGN_TOP, GrWhite());
                       GrTextXY(((2*(xres-ob))/3)+(ob/2)+ib,(yres/2)+(ob), acc_display, 15, 8);
                       
             }
